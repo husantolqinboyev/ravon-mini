@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ravon-mini
+    env: node
+    plan: free
+    rootDir: beckend-bot
+    buildCommand: "npm install"
+    startCommand: "node index.js"
+    healthCheckPath: "/ping"
+    envVars:
+      - key: NODE_ENV
+        value: "production"

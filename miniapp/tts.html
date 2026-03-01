@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Matnni ovozga aylantirish · Ravon AI</title>
+    <!-- Font Awesome 6 (haqiqiy ikonlar) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #f0f5fe 0%, #e1ebf9 100%);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 16px 12px;
+        }
+
+        .phone-frame {
+            max-width: 400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 44px;
+            box-shadow: 0 25px 50px -12px rgba(0, 40, 80, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            padding: 24px 18px 30px;
+        }
+
+        /* header (orqaga va sarlavha) */
+        .tts-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #1e3c72;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.7);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.02);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .back-btn:hover {
+            background: white;
+            transform: scale(1.02);
+        }
+        .back-btn:active {
+            transform: scale(0.96);
+        }
+        .header-title {
+            font-size: 24px;
+            font-weight: 650;
+            background: linear-gradient(145deg, #113355, #2b4b7a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+        .header-title i {
+            color: #2666b0;
+            margin-right: 6px;
+            font-size: 26px;
+        }
+
+        /* asosiy panel (bosqichlar) */
+        .stage-panel {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(8px);
+            border-radius: 40px;
+            padding: 24px 20px;
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: inset 0 2px 8px rgba(255,255,255,0.7), 0 8px 22px rgba(0,30,60,0.12);
+            transition: all 0.3s ease;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* umumiy message box */
+        .message-box {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .info-row {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .info-row i {
+            font-size: 32px;
+            color: #004c99;
+            background: rgba(255,255,255,0.7);
+            width: 54px;
+            height: 54px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 6px 12px rgba(0,60,120,0.1);
+        }
+        .info-content {
+            background: white;
+            padding: 18px 20px;
+            border-radius: 28px;
+            box-shadow: 0 6px 16px rgba(0,40,70,0.06);
+            flex: 1;
+            font-size: 16px;
+            font-weight: 500;
+            color: #10355e;
+            border: 1px solid rgba(255,255,255,0.7);
+        }
+        .info-content strong {
+            color: #0d3f77;
+            font-size: 18px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        /* matn kiritish maydoni (statik) */
+        .input-sim {
+            background: #f2f9ff;
+            border-radius: 30px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(0,90,150,0.2);
+            margin-top: 8px;
+        }
+        .input-sim i {
+            font-size: 22px;
+            color: #2666b0;
+            background: none;
+            width: auto;
+            height: auto;
+            box-shadow: none;
+        }
+        .input-sim span {
+            color: #1d4e7c;
+            font-weight: 500;
+            opacity: 0.9;
+            flex: 1;
+        }
+        .fake-button {
+            background: #d2e5ff;
+            padding: 10px 24px;
+            border-radius: 40px;
+            color: #004c99;
+            font-weight: 600;
+            font-size: 15px;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,70,140,0.15);
+            cursor: pointer;
+            transition: 0.1s;
+            white-space: nowrap;
+        }
+        .fake-button:active {
+            transform: scale(0.96);
+            background: #b9d6ff;
+        }
+
+        /* ovoz tanlash tugmalari (erkak/ayol) */
+        .voice-choice {
+            display: flex;
+            gap: 14px;
+            margin: 16px 0 8px;
+            flex-wrap: wrap;
+        }
+        .voice-option {
+            flex: 1 1 120px;
+            background: rgba(255,255,255,0.8);
+            border: 1.5px solid rgba(0,80,150,0.3);
+            border-radius: 50px;
+            padding: 14px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #0d3f77;
+            transition: all 0.2s;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+        }
+        .voice-option i {
+            font-size: 24px;
+            background: none;
+            width: auto;
+            height: auto;
+            box-shadow: none;
+            color: #2666b0;
+        }
+        .voice-option.selected {
+            background: #ffffff;
+            border-color: #004c99;
+            box-shadow: 0 6px 14px rgba(0,90,200,0.2);
+            transform: scale(1.02);
+        }
+        .voice-option:active {
+            transform: scale(0.97);
+        }
+
+        /* yuklash animatsiyasi */
+        .loading-animation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            background: #e3efff;
+            border-radius: 60px;
+            padding: 16px 24px;
+            margin: 10px 0;
+        }
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 4px solid #c0d6f0;
+            border-top: 4px solid #004c99;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* audio player (tayyor) */
+        .audio-player {
+            background: #f0f7ff;
+            border-radius: 40px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 1px solid white;
+            margin-top: 16px;
+        }
+        .audio-player i {
+            font-size: 40px;
+            color: #004c99;
+            background: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 12px rgba(0,60,130,0.15);
+        }
+        .audio-info {
+            flex: 1;
+        }
+        .audio-info .title {
+            font-weight: 600;
+            color: #10355e;
+        }
+        .audio-info .size {
+            font-size: 13px;
+            color: #4a6f96;
+        }
+        .play-btn {
+            background: #004c99;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 6px 14px rgba(0,80,160,0.4);
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* orqa fon eslatmasi */
+        .dummy-note {
+            text-align: center;
+            color: #577394;
+            font-size: 12px;
+            margin-top: 25px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <!-- header -->
+        <div class="tts-header">
+            <div class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i></div>
+            <div class="header-title">
+                <i class="fa-solid fa-waveform"></i> Matnni ovozga aylantirish
+            </div>
+        </div>
+
+        <!-- asosiy bosqichlar paneli -->
+        <div class="stage-panel" id="stagePanel">
+            <!-- 1-bosqich: matn kiritish (standart) -->
+            <div id="step1" class="message-box">
+                <div class="info-row">
+                    <i class="fa-regular fa-keyboard"></i>
+                    <div class="info-content">
+                        <strong>✍️ Ajoyib, endi ovozga aylantirmoqchi bo‘lgan matn yoki so‘zni kiriting</strong>
+                        <div class="input-sim">
+                            <i class="fa-regular fa-message"></i>
+                            <span>Masalan: "Salom, qalaysiz?"</span>
+                            <div class="fake-button" id="submitTextBtn">Yuborish</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2-bosqich: ovoz tanlash (matn yuborilgandan keyin) -->
+            <div id="step2" class="message-box hidden">
+                <div class="info-row">
+                    <i class="fa-regular fa-face-smile"></i>
+                    <div class="info-content">
+                        <strong>🎤 Matn qabul qilindi! Ovoz turini tanlang</strong>
+                        <div style="margin: 16px 0 8px; padding:10px 16px; background:#E7F1FA; border-radius:40px;">
+                            <i class="fa-regular fa-file-lines"></i> “<span id="selectedTextPreview">Salom, dunyo</span>”
+                        </div>
+                        <div class="voice-choice">
+                            <div class="voice-option" id="voiceMale" data-voice="male">
+                                <i class="fa-solid fa-person"></i> Erkak ovozi
+                            </div>
+                            <div class="voice-option" id="voiceFemale" data-voice="female">
+                                <i class="fa-solid fa-person-dress"></i> Ayol ovozi
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; text-align: right;">
+                            <div class="fake-button" id="confirmVoiceBtn" style="background: #004c99; color: white;">Tanlash</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3-bosqich: yuklash va audio tayyor -->
+            <div id="step3" class="message-box hidden">
+                <div class="info-row">
+                    <i class="fa-regular fa-circle-check" style="color:#0f8126;"></i>
+                    <div class="info-content">
+                        <strong>⚡ Zo‘r, matn audioga aylantirilmoqda</strong>
+                        <!-- loading animatsiyasi -->
+                        <div class="loading-animation" id="loadingAnim">
+                            <div class="spinner"></div>
+                            <span>Iltimos, kuting...</span>
+                        </div>
+                        <!-- audio tayyor (dastlab yashirin) -->
+                        <div id="audioReadyBlock" class="hidden">
+                            <div class="audio-player">
+                                <i class="fa-solid fa-circle-play"></i>
+                                <div class="audio-info">
+                                    <div class="title">aylantirilgan_audio.mp3</div>
+                                    <div class="size">0.4 MB · 00:12</div>
+                                </div>
+                                <div class="play-btn"><i class="fa-solid fa-headphones"></i> Tingla</div>
+                            </div>
+                            <div style="margin-top: 18px; color:#0f4e7a; display:flex; gap:10px; justify-content:center;">
+                                <i class="fa-regular fa-circle-down"></i> Yuklab olish (backend bog‘lanadi)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dummy-note">
+            <i class="fa-regular fa-circle-check"></i> Bosqichli o‘tish · backendga tayyor
+        </div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        (function () {
+            const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+            if (tg) { tg.ready(); tg.expand(); }
+            const initData = tg ? tg.initData : '';
+            const apiFetch = (p, opt) => {
+                const o = opt || {};
+                o.headers = o.headers || {};
+                o.headers['x-telegram-init-data'] = initData;
+                return fetch('/api' + p, o);
+            };
+            const openDB = () => new Promise((resolve, reject) => {
+                const req = indexedDB.open('Index.db', 1);
+                req.onupgradeneeded = () => {
+                    const db = req.result;
+                    if (!db.objectStoreNames.contains('files')) db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+            const saveFileBlob = async (blob, name, type) => {
+                const db = await openDB();
+                const tx = db.transaction('files', 'readwrite');
+                tx.objectStore('files').add({ createdAt: Date.now(), name, type, blob });
+                tx.oncomplete = () => db.close();
+            };
+            // elementlar
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            const selectedTextSpan = document.getElementById('selectedTextPreview');
+            const submitBtn = document.getElementById('submitTextBtn');
+            const backBtn = document.getElementById('backBtn');
+            const voiceMale = document.getElementById('voiceMale');
+            const voiceFemale = document.getElementById('voiceFemale');
+            const confirmVoiceBtn = document.getElementById('confirmVoiceBtn');
+            const loadingAnim = document.getElementById('loadingAnim');
+            const audioReadyBlock = document.getElementById('audioReadyBlock');
+            const stagePanel = document.getElementById('stagePanel');
+
+            // tanlangan ovoz (male / female)
+            let selectedVoice = 'male'; // default
+            let userText = 'Salom, dunyo'; // default matn
+
+            // barcha bosqichlarni yashirish
+            function hideAllSteps() {
+                step1.classList.add('hidden');
+                step2.classList.add('hidden');
+                step3.classList.add('hidden');
+            }
+
+            // step1 ni ko‘rsat (matn kiritish)
+            function showStep1() {
+                hideAllSteps();
+                step1.classList.remove('hidden');
+            }
+
+            // step2 ni ko‘rsat (ovoz tanlash) – matn bilan
+            function showStep2(text) {
+                hideAllSteps();
+                selectedTextSpan.innerText = text || 'Salom, dunyo';
+                step2.classList.remove('hidden');
+                // tanlangan ovozni visual "selected" qilish (default male)
+                voiceMale.classList.add('selected');
+                voiceFemale.classList.remove('selected');
+                selectedVoice = 'male';
+            }
+
+            // step3 ni ko‘rsat (yuklash + keyin audio)
+            function showStep3() {
+                hideAllSteps();
+                step3.classList.remove('hidden');
+                // yuklash holati ko‘rinadi, audio yashirin
+                loadingAnim.classList.remove('hidden');
+                audioReadyBlock.classList.add('hidden');
+
+                // 2 soniyadan so‘ng audio tayyor bo‘ladi (statik simulyatsiya)
+                setTimeout(function() {
+                    loadingAnim.classList.add('hidden');
+                    audioReadyBlock.classList.remove('hidden');
+                }, 2000);
+            }
+
+            // 1-bosqich: "Yuborish" tugmasi bosilganda
+            // haqiqiy input qo'shish
+            const inputSim = document.querySelector('#step1 .input-sim');
+            if (inputSim) {
+                const textInput = document.createElement('textarea');
+                textInput.style.flex = '1';
+                textInput.rows = 3;
+                textInput.placeholder = 'Matnni kiriting';
+                inputSim.replaceChild(textInput, inputSim.querySelector('span'));
+            }
+
+            submitBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const val = document.querySelector('#step1 .input-sim textarea')?.value || '';
+                if (!val.trim()) return;
+                userText = val.trim();
+                showStep2(userText);
+            });
+
+            // ovoz tanlash (erkak)
+            voiceMale.addEventListener('click', function() {
+                voiceMale.classList.add('selected');
+                voiceFemale.classList.remove('selected');
+                selectedVoice = 'male';
+            });
+            // ovoz tanlash (ayol)
+            voiceFemale.addEventListener('click', function() {
+                voiceFemale.classList.add('selected');
+                voiceMale.classList.remove('selected');
+                selectedVoice = 'female';
+            });
+
+            // "Tanlash" (ovoz tanlandi) -> step3 ga o‘tish
+            confirmVoiceBtn.addEventListener('click', async function () {
+                const voiceName = selectedVoice === 'male' ? 'en-US-GuyNeural' : 'en-US-AriaNeural';
+                showStep3();
+                try {
+                    const r = await apiFetch('/text-to-speech', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: selectedTextSpan.innerText, voice: voiceName })
+                    });
+                    const b = await r.blob();
+                    const url = URL.createObjectURL(b);
+                    const audioUi = document.createElement('audio');
+                    audioUi.controls = true;
+                    audioUi.src = url;
+                    const player = document.querySelector('.audio-player');
+                    if (player) {
+                        const info = player.querySelector('.audio-info .title');
+                        if (info) info.innerText = 'generated_audio.mp3';
+                        const btn = player.querySelector('.play-btn');
+                        btn && btn.replaceWith(audioUi);
+                        const dl = document.createElement('button');
+                        dl.className = 'fake-button';
+                        dl.style.marginLeft = '10px';
+                        dl.textContent = 'Yuklab olish';
+                        dl.addEventListener('click', async () => {
+                            await saveFileBlob(b, 'tts_' + Date.now() + '.mp3', 'audio');
+                            const db = await openDB();
+                            const tx = db.transaction('files', 'readonly');
+                            const store = tx.objectStore('files');
+                            const req = store.getAll();
+                            req.onsuccess = () => {
+                                const all = req.result || [];
+                                const item = all.reverse().find(x => x.type === 'audio');
+                                if (item) {
+                                    const u = URL.createObjectURL(item.blob);
+                                    const a = document.createElement('a');
+                                    a.href = u;
+                                    a.download = item.name || 'audio.mp3';
+                                    a.click();
+                                    setTimeout(() => URL.revokeObjectURL(u), 3000);
+                                }
+                                db.close();
+                            };
+                        });
+                        player.appendChild(dl);
+                    } else {
+                        stagePanel.appendChild(audioUi);
+                    }
+                } catch (e) { }
+                loadingAnim.classList.add('hidden');
+                audioReadyBlock.classList.remove('hidden');
+            });
+
+            // orqaga tugmasi (back) – step1 ga qaytadi
+            backBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showStep1();
+                // Agar step3 da bo‘lsa ham, to‘g‘ridan-to‘g‘ri step1 ga qaytadi
+            });
+
+            // dastlab step1 ko‘rsatilsin
+            showStep1();
+
+            // qo‘shimcha: audio playerdagi "Tingla" tugmasi demo
+            // play/yuklab olish tugmalari o‘rniga real audio tag qo‘shiladi
+        })();
+    </script>
+</body>
+</html>

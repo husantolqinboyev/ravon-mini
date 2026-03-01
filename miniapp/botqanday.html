@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Bot qanday ishlaydi? · Ravon AI</title>
+    <!-- Font Awesome 6 (haqiqiy ikonlar) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #f0f5fe 0%, #e6effa 100%);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 16px 12px;
+        }
+
+        .phone-frame {
+            max-width: 400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 44px;
+            box-shadow: 0 25px 50px -12px rgba(0, 40, 80, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            padding: 24px 18px 30px;
+        }
+
+        /* header (orqaga va sarlavha) */
+        .howto-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #1e3c72;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.7);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.02);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .back-btn:hover {
+            background: white;
+            transform: scale(1.02);
+        }
+        .back-btn:active {
+            transform: scale(0.96);
+        }
+        .header-title {
+            font-size: 24px;
+            font-weight: 650;
+            background: linear-gradient(145deg, #113355, #2b4b7a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+        .header-title i {
+            color: #2666b0;
+            margin-right: 6px;
+            font-size: 26px;
+        }
+
+        /* intro section */
+        .intro-card {
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 36px;
+            padding: 22px;
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 8px 22px rgba(0,40,80,0.1);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .intro-icon {
+            font-size: 56px;
+            color: #004c99;
+            margin-bottom: 12px;
+        }
+        .intro-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #00315e;
+            margin-bottom: 10px;
+        }
+        .intro-text {
+            color: #1d4a78;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* bosqichlar (step by step) */
+        .steps-section {
+            margin: 28px 0 20px;
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: 650;
+            color: #003368;
+            margin: 22px 0 16px 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .step-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(4px);
+            border-radius: 34px;
+            padding: 18px;
+            border: 1px solid rgba(255,255,255,0.7);
+        }
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: #004c99;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 22px;
+            flex-shrink: 0;
+            box-shadow: 0 8px 16px rgba(0,70,150,0.3);
+        }
+        .step-content {
+            flex: 1;
+        }
+        .step-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #002856;
+            margin-bottom: 6px;
+        }
+        .step-desc {
+            color: #1f4a7a;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+        /* imkoniyatlar grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 16px 0 20px;
+        }
+        .feature-item {
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 18px 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        .feature-item i {
+            font-size: 32px;
+            color: #004c99;
+            margin-bottom: 10px;
+            background: white;
+            width: 56px;
+            height: 56px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 14px rgba(0,60,130,0.15);
+        }
+        .feature-item span {
+            display: block;
+            font-weight: 600;
+            color: #00356b;
+            font-size: 15px;
+        }
+
+        /* FAQ (tez-tez so'raladigan savollar) */
+        .faq-item {
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 18px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        .faq-question {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: #00356b;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .faq-question i {
+            color: #004c99;
+            transition: transform 0.2s;
+        }
+        .faq-answer {
+            margin-top: 14px;
+            padding-left: 38px;
+            color: #1f4a7a;
+            font-size: 15px;
+            line-height: 1.5;
+            display: none;
+        }
+        .faq-item.expanded .faq-answer {
+            display: block;
+        }
+        .faq-item.expanded .faq-question i {
+            transform: rotate(90deg);
+        }
+
+        /* tezkor boshlash tugmasi */
+        .quick-start {
+            background: linear-gradient(145deg, #004c99, #002f5f);
+            border-radius: 60px;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 28px 0 16px;
+            box-shadow: 0 15px 25px rgba(0,60,120,0.4);
+            cursor: pointer;
+        }
+        .quick-start span {
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        .quick-start i {
+            color: white;
+            font-size: 28px;
+        }
+
+        .dummy-note {
+            text-align: center;
+            color: #577394;
+            font-size: 12px;
+            margin-top: 25px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <!-- header -->
+        <div class="howto-header">
+            <div class="back-btn" id="backBtn" onclick="history.back(); return false;"><i class="fas fa-arrow-left"></i></div>
+            <div class="header-title">
+                <i class="fa-regular fa-circle-question"></i> Bot qanday ishlaydi?
+            </div>
+        </div>
+
+        <!-- intro / welcome -->
+        <div class="intro-card">
+            <div class="intro-icon">
+                <i class="fa-regular fa-robot"></i>
+            </div>
+            <div class="intro-title">
+                Ravon AI — sizning aqlli yordamchingiz
+            </div>
+            <div class="intro-text">
+                Ovozli talaffuz, matnni ovozga aylantirish va ko‘plab imkoniyatlar
+            </div>
+        </div>
+
+        <!-- ISHLASH BOSQICHLARI (step by step) -->
+        <div class="steps-section">
+            <div class="section-title">
+                <i class="fa-regular fa-compass"></i> Qanday ishlaydi?
+            </div>
+
+            <!-- 1-qadam -->
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <div class="step-title">Kerakli bo‘limni tanlang</div>
+                    <div class="step-desc">Asosiy menyudan talaffuz, ovozga aylantirish yoki profil bo‘limiga o‘ting.</div>
+                </div>
+            </div>
+
+            <!-- 2-qadam -->
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <div class="step-title">Matn yoki so‘z kiriting</div>
+                    <div class="step-desc">O‘zingiz istagan matnni yozing yoki tasodifiy so‘z tanlang.</div>
+                </div>
+            </div>
+
+            <!-- 3-qadam -->
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <div class="step-title">Ovozli xabar yuboring</div>
+                    <div class="step-desc">Talaffuzni tekshirish uchun audio yozing yoki matnni ovozga aylantirishni kuting.</div>
+                </div>
+            </div>
+
+            <!-- 4-qadam -->
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <div class="step-title">Natijani oling va baholang</div>
+                    <div class="step-desc">Talaffuz balli, audio fayl yoki reytingdagi o‘rningizni ko‘ring.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ASOSIY IMKONIYATLAR -->
+        <div class="section-title">
+            <i class="fa-regular fa-star"></i> Asosiy imkoniyatlar
+        </div>
+        <div class="features-grid">
+            <div class="feature-item">
+                <i class="fa-solid fa-microphone-lines"></i>
+                <span>Talaffuz tahlili</span>
+            </div>
+            <div class="feature-item">
+                <i class="fa-solid fa-waveform"></i>
+                <span>Matndan ovozga</span>
+            </div>
+            <div class="feature-item">
+                <i class="fa-regular fa-chart-line"></i>
+                <span>Shaxsiy statistika</span>
+            </div>
+            <div class="feature-item">
+                <i class="fa-regular fa-trophy"></i>
+                <span>Reyting va sovrinlar</span>
+            </div>
+            <div class="feature-item">
+                <i class="fa-regular fa-gem"></i>
+                <span>Moslashuvchi tariflar</span>
+            </div>
+            <div class="feature-item">
+                <i class="fa-regular fa-hand-peace"></i>
+                <span>Referal tizimi</span>
+            </div>
+        </div>
+
+        <!-- TEZ-TEZ SO'RALADIGAN SAVOLLAR (FAQ) -->
+        <div class="section-title">
+            <i class="fa-regular fa-comments"></i> Ko‘p so‘raladigan savollar
+        </div>
+
+        <!-- FAQ 1 -->
+        <div class="faq-item" id="faq1">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                <i class="fa-regular fa-circle-chevron-right"></i>
+                <span>Bot bepulmi yoki pullikmi?</span>
+            </div>
+            <div class="faq-answer">
+                Botning asosiy funksiyalari bepul. Cheksiz so‘rov va qo‘shimcha ovozlar uchun tarif rejalari mavjud.
+            </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="faq-item" id="faq2">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                <i class="fa-regular fa-circle-chevron-right"></i>
+                <span>Talaffuz bahosi qanday hisoblanadi?</span>
+            </div>
+            <div class="faq-answer">
+                Sun'iy intellekt yordamida sizning ovozingiz matn bilan solishtiriladi va 100 ballik tizimda baholanadi.
+            </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="faq-item" id="faq3">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                <i class="fa-regular fa-circle-chevron-right"></i>
+                <span>Qanday tillarni qo‘llab-quvvatlaydi?</span>
+            </div>
+            <div class="faq-answer">
+                Hozirda o‘zbek, rus va ingliz tillari to‘liq qo‘llab-quvvatlanadi. Boshqa tillar qo‘shilmoqda.
+            </div>
+        </div>
+
+        <!-- FAQ 4 -->
+        <div class="faq-item" id="faq4">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                <i class="fa-regular fa-circle-chevron-right"></i>
+                <span>Referal orqali qancha limit olsam bo‘ladi?</span>
+            </div>
+            <div class="faq-answer">
+                Har bir taklif qilingan do‘stingiz uchun 10 ta bepul limit beriladi. Do‘stingiz ham 5 limit oladi.
+            </div>
+        </div>
+
+        <!-- TEZKOR BOSHLASH TUGMASI -->
+        <div class="quick-start" id="quickStartBtn">
+            <span>🚀 Tezkor boshlash</span>
+            <i class="fa-regular fa-arrow-right"></i>
+        </div>
+
+        <!-- backend eslatmasi -->
+        <div class="dummy-note">
+            <i class="fa-regular fa-database"></i> statik maʼlumot · backendga moslanadi
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // orqaga tugmasi
+            const backBtn = document.getElementById('backBtn');
+            backBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                history.back();
+            });
+
+            // FAQ toggle funksiyasi
+            window.toggleFaq = function(element) {
+                const faqItem = element.closest('.faq-item');
+                faqItem.classList.toggle('expanded');
+            };
+
+            // tezkor boshlash tugmasi
+            const quickStart = document.getElementById('quickStartBtn');
+            quickStart.addEventListener('click', function() {
+                alert('🚀 Asosiy menyuga o‘tish (backend integratsiyasi)');
+                // bu yerda asosiy sahifaga yo'naltirish mumkin
+                // window.location.href = 'index.html';
+            });
+
+            // barcha faq itemlarni yig'ish va bosilganda ishlash
+            document.querySelectorAll('.faq-question').forEach(question => {
+                question.addEventListener('click', function(e) {
+                    const faqItem = this.closest('.faq-item');
+                    faqItem.classList.toggle('expanded');
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

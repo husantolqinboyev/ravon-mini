@@ -213,7 +213,7 @@
         <div class="greeting">
             <i class="fa-regular fa-hand-peace"></i>
             <div class="greeting-text">
-                Salom! <small>yangi imkoniyatlar</small>
+                Salom! <small>yangi imkoniyatlar Ravon AI</small>
             </div>
         </div>
 
@@ -222,25 +222,25 @@
 
 
             <!-- 2️⃣ Talaffuzni tekshirish -->
-            <a href="#" class="menu-btn" aria-label="Talaffuzni tekshirish">
+            <a href="tallafuz.html" class="menu-btn" aria-label="Talaffuzni tekshirish">
                 <span class="icon-bg"><i class="fa-solid fa-ear-listen"></i></span>
                 <span class="btn-text">Talaffuzni tekshirish</span>
             </a>
 
             <!-- 3️⃣ Matnni ovozga aylantirish -->
-            <a href="#" class="menu-btn" aria-label="Matnni ovozga aylantirish">
+            <a href="tts.html" class="menu-btn" aria-label="Matnni ovozga aylantirish">
                 <span class="icon-bg"><i class="fa-solid fa-waveform"></i></span>
                 <span class="btn-text">Matnni ovozga aylantirish</span>
             </a>
 
             <!-- 4️⃣ Profil -->
-            <a href="#" class="menu-btn" aria-label="Profil">
+            <a href="profile.html" class="menu-btn" aria-label="Profil">
                 <span class="icon-bg"><i class="fa-regular fa-user"></i></span>
                 <span class="btn-text">Profil</span>
             </a>
 
             <!-- 5️⃣ Tariflar | Ko‘proq foyda olish -->
-            <a href="#" class="menu-btn" aria-label="Tariflar">
+            <a href="tarif.html" class="menu-btn" aria-label="Tariflar">
                 <span class="icon-bg"><i class="fa-regular fa-gem"></i></span>
                 <span class="btn-text">
                     Tariflar
@@ -249,7 +249,7 @@
             </a>
 
             <!-- 6️⃣ Bot qanday ishlaydi? -->
-            <a href="#" class="menu-btn" aria-label="Bot qanday ishlaydi">
+            <a href="botqanday.html" class="menu-btn" aria-label="Bot qanday ishlaydi">
                 <span class="icon-bg"><i class="fa-regular fa-circle-question"></i></span>
                 <span class="btn-text">Bot qanday ishlaydi?</span>
             </a>
@@ -258,7 +258,7 @@
 
         <!-- oddiy statik eslatma (ortiqcha emas, juda yengil) -->
         <div class="credit-note">
-            • haqiqiy ikonlar • silliq animatsiya •
+            • Ravon AI • Sizning yordamchingiz •
         </div>
     </div>
 
@@ -327,197 +327,7 @@
                 btn.addEventListener('touchend', function () { this.style.transition = ''; });
             });
             const q = (label) => document.querySelector('.menu-btn[aria-label="' + label + '"]');
-            const btnPron = q('Talaffuzni tekshirish');
-            const btnTts = q('Matnni ovozga aylantirish');
-            const btnProfile = q('Profil');
-            const btnTariffs = q('Tariflar');
-            const up = document.createElement('input');
-            up.type = 'file';
-            up.accept = 'audio/*';
-            up.style.display = 'none';
-            document.body.appendChild(up);
-            if (btnPron) {
-                btnPron.addEventListener('click', async () => {
-                    const mode = prompt('1) O\'zim yozaman\n2) Tasodifiy so‘z/matn');
-                    currentReferenceText = null;
-                    currentType = 'general';
-                    if (mode === '1') {
-                        const txt = prompt('O\'zingiz talaffuz qilmoqchi bo‘lgan matn yoki so‘zni yozing');
-                        if (!txt) return;
-                        alert('Ajoyib, endi ovozli xabar yuboring. Eslatma: yuborgan audiongiz matnga mos bo‘lsin.');
-                        currentReferenceText = txt;
-                        currentType = 'compare';
-                        up.value = '';
-                        up.click();
-                    } else if (mode === '2') {
-                        const t = prompt('Tanlang: word yoki text');
-                        const type = (t && t.toLowerCase().includes('text')) ? 'text' : 'word';
-                        try {
-                            const r = await apiFetch('/random-word?type=' + type);
-                            const j = await r.json();
-                            const content = j && (j.word || j.content);
-                            if (!content) { alert('Maʼlumot topilmadi'); return; }
-                            alert('Iltimos, quyidagi matnni o‘qib audio yuboring:\n\n' + content);
-                            currentReferenceText = content;
-                            currentType = 'compare';
-                            up.value = '';
-                            up.click();
-                        } catch { alert('Xatolik'); }
-                    } else {
-                        up.value = '';
-                        up.click();
-                    }
-                });
-                up.addEventListener('change', async (e) => {
-                    const file = e.target.files && e.target.files[0];
-                    if (!file) return;
-                    const fd = new FormData();
-                    fd.append('audio', file);
-                    fd.append('duration', '0');
-                     if (currentReferenceText) {
-                        fd.append('reference_text', currentReferenceText);
-                     }
-                    try {
-                        const r = await apiFetch('/analyze-audio', { method: 'POST', body: fd });
-                        const j = await r.json();
-                        if (j && j.success) {
-                            await saveAssessment(j.data || j);
-                            const { jsPDF } = window.jspdf;
-                            const doc = new jsPDF();
-                            const d = j.data || {};
-                            const s = String(d.overallScore || 0);
-                            doc.setFontSize(16);
-                            doc.text('Talaffuz tahlili', 10, 15);
-                            doc.setFontSize(12);
-                            doc.text('Umumiy: ' + s + '%', 10, 28);
-                            doc.text('Aniqlik: ' + String(d.accuracyScore || 0) + '%', 10, 38);
-                            doc.text('Ravonlik: ' + String(d.fluencyScore || 0) + '%', 10, 48);
-                            doc.text('Ohang: ' + String(d.prosodyScore || 0) + '%', 10, 58);
-                            if (d.transcription) {
-                                doc.text('Transkriptiya:', 10, 72);
-                                doc.setFontSize(10);
-                                doc.text(String(d.transcription).slice(0, 800), 10, 82, { maxWidth: 180 });
-                            }
-                            const blob = doc.output('blob');
-                            await savePDFBlob(blob);
-                            alert('PDF saqlandi');
-                        } else {
-                            alert('Xatolik');
-                        }
-                    } catch {
-                        alert('Xatolik');
-                    }
-                });
-            }
-            if (btnTts) {
-                btnTts.addEventListener('click', async () => {
-                    const text = prompt('Ajoyib! Ovozga aylantirmoqchi bo‘lgan matn yoki so‘zni kiriting');
-                    if (!text) return;
-                    const v = prompt('Ovoz turini tanlang: 1) Erkak  2) Ayol');
-                    const voice = (v === '1') ? 'en-US-GuyNeural' : 'en-US-AriaNeural';
-                    try {
-                        const r = await apiFetch('/text-to-speech', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ text, voice })
-                        });
-                        const b = await r.blob();
-                        const url = URL.createObjectURL(b);
-                        const audio = new Audio(url);
-                        audio.play();
-                    } catch {
-                        alert('Xatolik');
-                    }
-                });
-            }
-            if (btnProfile) {
-                btnProfile.addEventListener('click', async () => {
-                    try {
-                        const u = await apiFetch('/user-data');
-                        const d = await u.json();
-                        const s = d.stats || {};
-                        const me = d.user || {};
-                        const info = [
-                            'Maʼlumotlarim:',
-                            '• Ism: ' + (me.first_name || ''),
-                            '• ID: ' + (me.id || me.telegram_id || ''),
-                            '• Tarif: ' + (me.tariff_name || '—'),
-                            '',
-                            'Natijalarim:',
-                            '• Foydalanish: ' + String(s.total_assessments || 0),
-                            '• O‘rtacha ball: ' + String(Math.round(s.avg_overall || 0)) + '%',
-                            '',
-                            'Admin bilan bog‘lanish: @khamidovsanat'
-                        ].join('\n');
-                        alert(info);
-                        const dl = confirm('Oxirgi saqlangan PDFni yuklab olishni xohlaysizmi?');
-                        if (dl) {
-                            const getLastPDFBlob = async () => {
-                                const db = await openDB();
-                                const tx = db.transaction('files', 'readonly');
-                                const store = tx.objectStore('files');
-                                if (store.getAll) {
-                                    const all = await new Promise((resolve, reject) => {
-                                        const req = store.getAll();
-                                        req.onsuccess = () => resolve(req.result || []);
-                                        req.onerror = () => reject(req.error);
-                                    });
-                                    db.close();
-                                    if (all.length) return all[all.length - 1].blob;
-                                    return null;
-                                }
-                                db.close();
-                                return null;
-                            };
-                            const blob = await getLastPDFBlob();
-                            if (blob) {
-                                const url = URL.createObjectURL(blob);
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = 'report.pdf';
-                                a.click();
-                                setTimeout(() => URL.revokeObjectURL(url), 3000);
-                            } else {
-                                alert('Lokal xotirada PDF topilmadi');
-                            }
-                        }
-                        const lb = await apiFetch('/leaderboard');
-                        const top = await lb.json();
-                        if (Array.isArray(top) && top.length) {
-                            let msg = 'Top foydalanuvchilar:\n';
-                            top.slice(0, 5).forEach((u, i) => {
-                                msg += `${i + 1}. ${u.first_name || ''} — ${Math.round(u.avg_score || 0)}% (${u.usage_count || 0}x)\n`;
-                            });
-                            alert(msg);
-                        }
-                    } catch {
-                        if (tg) tg.sendData(JSON.stringify({ source: 'mini_app', action: 'profile' }));
-                    }
-                });
-            }
-            if (btnTariffs) {
-                btnTariffs.addEventListener('click', async () => {
-                    try {
-                        const r = await apiFetch('/user-data');
-                        const j = await r.json();
-                        const tariffs = j.tariffs || [];
-                        const lines = tariffs.map(t => `${t.id}) ${t.name} — ${t.price} so‘m`);
-                        lines.push('', 'Bepul limit olish: Referal tizimi orqali do‘stlaringizni taklif qiling');
-                        const choice = prompt(lines.join('\n') + '\n\nSotib olish uchun tarif ID sini kiriting:');
-                        if (choice && tg) {
-                            tg.sendData(JSON.stringify({ source: 'mini_app', action: 'select_tariff_' + choice }));
-                        }
-                    } catch {
-                        if (tg) tg.sendData(JSON.stringify({ source: 'mini_app', action: 'tariffs' }));
-                    }
-                });
-            }
-            const btnHow = q('Bot qanday ishlaydi');
-            if (btnHow) {
-                btnHow.addEventListener('click', () => {
-                    if (tg) tg.sendData(JSON.stringify({ source: 'mini_app', action: 'how_it_works' }));
-                });
-            }
+            // index sahifada faqat salomlashuvni dinamik qiladi
         })();
     </script>
 </body>

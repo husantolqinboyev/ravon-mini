@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Talaffuz tekshirish · Ravon AI</title>
+    <!-- Font Awesome 6 (haqiqiy ikonlar) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #f0f5fe 0%, #e6eefa 100%);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 16px 12px;
+        }
+
+        /* mobil karta */
+        .phone-frame {
+            max-width: 400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 44px;
+            box-shadow: 0 25px 50px -12px rgba(0, 30, 70, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            padding: 24px 18px 30px;
+        }
+
+        /* header (orqaga va sarlavha) */
+        .talaffuz-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #1e3c72;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.7);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.02);
+            transition: 0.2s;
+        }
+        .back-btn:hover {
+            background: white;
+            transform: scale(1.02);
+        }
+        .back-btn:active {
+            transform: scale(0.96);
+        }
+        .header-title {
+            font-size: 24px;
+            font-weight: 650;
+            background: linear-gradient(145deg, #113355, #2b4b7a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+        .header-title i {
+            color: #2b4b7a;
+            margin-right: 6px;
+            font-size: 28px;
+            background: none;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+            color: #2666b0;
+        }
+
+        /* asosiy ikkala tugma (katta variant) */
+        .choice-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-bottom: 32px;
+        }
+
+        .choice-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 36px;
+            padding: 22px 20px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: 0 12px 22px -10px rgba(20, 50, 100, 0.2);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .choice-card:hover {
+            transform: scale(1.01) translateY(-2px);
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 20px 28px -12px #1e3f70;
+        }
+        .choice-card:active {
+            transform: scale(0.98);
+            background: white;
+        }
+
+        .choice-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: #0d3d77;
+            box-shadow: 0 10px 18px -8px #103a62;
+            flex-shrink: 0;
+        }
+
+        .choice-text {
+            flex: 1;
+            font-size: 18px;
+            font-weight: 600;
+            color: #01254e;
+            line-height: 1.4;
+        }
+        .choice-text small {
+            display: block;
+            font-size: 14px;
+            font-weight: 400;
+            color: #345a84;
+            margin-top: 4px;
+        }
+
+        /* dinammik panel – natijalar/ko'rsatmalar */
+        .stage-panel {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(8px);
+            border-radius: 36px;
+            padding: 22px 20px;
+            border: 1px solid rgba(255,255,255,0.8);
+            margin-top: 16px;
+            box-shadow: inset 0 2px 6px rgba(255,255,255,0.6), 0 8px 18px rgba(0,30,60,0.1);
+            transition: all 0.3s;
+        }
+
+        .message-box {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        .info-row i {
+            font-size: 28px;
+            color: #004c99;
+            background: rgba(255,255,255,0.7);
+            width: 48px;
+            height: 48px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .info-content {
+            background: white;
+            padding: 16px 18px;
+            border-radius: 26px;
+            box-shadow: 0 6px 14px rgba(0,40,70,0.08);
+            flex: 1;
+            font-size: 16px;
+            font-weight: 500;
+            color: #10355e;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        .info-content strong {
+            color: #174682;
+        }
+        .info-content .warning {
+            background: #fff1e0;
+            border-left: 4px solid #f0823b;
+            padding: 12px 14px;
+            border-radius: 20px;
+            margin-top: 12px;
+            font-size: 15px;
+            color: #904d18;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .warning i {
+            font-size: 22px;
+            color: #c9620b;
+            background: none;
+            width: auto;
+            height: auto;
+        }
+
+        .input-sim {
+            background: #f2f7ff;
+            border-radius: 28px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(0,68,128,0.2);
+            margin: 8px 0;
+        }
+        .input-sim i {
+            color: #2666b0;
+            font-size: 22px;
+        }
+        .input-sim span {
+            color: #1d4e7c;
+            font-weight: 500;
+            opacity: 0.8;
+            flex: 1;
+        }
+        .fake-button {
+            background: #dceaff;
+            padding: 10px 20px;
+            border-radius: 40px;
+            color: #004c99;
+            font-weight: 600;
+            font-size: 15px;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0,60,130,0.1);
+        }
+
+        .random-word-box {
+            background: linear-gradient(145deg, #e5efff, #ffffff);
+            border-radius: 28px;
+            padding: 24px;
+            text-align: center;
+            border: 2px dashed #9bbce0;
+        }
+        .random-word {
+            font-size: 42px;
+            font-weight: 700;
+            color: #003d75;
+            letter-spacing: 2px;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+        .random-hint {
+            font-size: 16px;
+            color: #345e8b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .or-divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #1d4a78;
+            font-weight: 600;
+            margin: 8px 0;
+        }
+        .or-divider-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #a0bcdd, transparent);
+        }
+
+        /* pastki qatordagi eslatma */
+        .dummy-note {
+            text-align: center;
+            color: #577394;
+            font-size: 12px;
+            margin-top: 25px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <!-- sarlavha qismi -->
+        <div class="talaffuz-header">
+            <a href="#" class="back-btn" onclick="history.back(); return false;" style="cursor:pointer;"><i class="fas fa-arrow-left"></i></a>
+            <div class="header-title">
+                <i class="fa-solid fa-microphone-lines"></i> Talaffuz tekshirish
+            </div>
+        </div>
+
+        <!-- IKKI TANLOV (doimiy) -->
+        <div class="choice-grid">
+            <!-- 1. Matnni o‘zim yozaman -->
+            <div class="choice-card" id="choiceWrite">
+                <span class="choice-icon"><i class="fa-regular fa-keyboard"></i></span>
+                <span class="choice-text">
+                    Talaffuz matnni o‘zim yozaman
+                    <small>O‘zingiz matn kiriting</small>
+                </span>
+            </div>
+
+            <!-- 2. Tasodifiy so‘z / matn -->
+            <div class="choice-card" id="choiceRandom">
+                <span class="choice-icon"><i class="fa-solid fa-shuffle"></i></span>
+                <span class="choice-text">
+                    Tasodifiy so‘z va matn orqali tekshirish
+                    <small>Admin bazasidan tasodifiy</small>
+                </span>
+            </div>
+        </div>
+
+        <!-- DINAMIK PANEL (bosqichma-bosqich) boshlang'ich holatda bo'sh yoki oddiy xush kelibsiz ko'rsatiladi -->
+        <div class="stage-panel" id="stagePanel">
+            <!-- I variant: hech narsa tanlanmagan (default) -->
+            <div id="defaultMessage" class="message-box">
+                <div class="info-row">
+                    <i class="fa-regular fa-hand-point-up"></i>
+                    <div class="info-content">
+                        Yuqoridagi ikkala usuldan birini tanlang ✨
+                    </div>
+                </div>
+            </div>
+
+            <!-- A) MATNNI O‘ZIM YOZAMAN – 1-bosqich (so‘z yozish) -->
+            <div id="writeStep1" class="message-box hidden">
+                <div class="info-row">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                    <div class="info-content">
+                        <strong>✍️ O‘zingiz talaffuz qilmoqchi bo‘lgan matn yoki so‘zni yozing</strong>
+                        <div class="input-sim">
+                            <i class="fa-regular fa-message"></i>
+                            <span>Misol: “Assalomu alaykum”</span>
+                            <span class="fake-button">Yozish</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Bu faqat statik ko‘rinish; backendga ulash uchun tayyor -->
+            </div>
+
+            <!-- A2) Matn kiritilgandan keyin (2-bosqich) "Ajoyib, endi ovozli xabar..." -->
+            <div id="writeStep2" class="message-box hidden">
+                <div class="info-row">
+                    <i class="fa-regular fa-circle-check" style="color:#13902c;"></i>
+                    <div class="info-content">
+                        <strong style="color:#0f6a2b;">✅ Ajoyib!</strong> endi ovozli xabar yuboring.
+                        <div class="warning">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span><strong>Eslatma!!!</strong> yuborgan audiongiz matnga mos bo‘lishi kerak.</span>
+                        </div>
+                        <div style="margin-top:14px; background:#E9F2FA; border-radius:40px; padding:10px 20px; color:#003f73;">
+                            <i class="fa-solid fa-microphone"></i> Ovozli xabar yuborish tugmasi (backend)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- B) TASODIFIY SO‘Z / MATN 1-bosqich: tasodifiy matn chiqdi -->
+            <div id="randomStep1" class="message-box hidden">
+                <div class="info-row">
+                    <i class="fa-regular fa-star"></i>
+                    <div class="info-content" style="background: #f0f7ff;">
+                        <strong>🎲 Tasodifiy matn tayyor</strong>
+                        <!-- tasodifiy so'z (statik misol, backend almashtiradi) -->
+                        <div class="random-word-box">
+                            <div class="random-word">“Mehnat”</div>
+                            <div class="random-hint">
+                                <i class="fa-regular fa-face-smile"></i> Shu so‘zni o‘qib audiosini yuboring
+                            </div>
+                        </div>
+                        <div style="margin-top:16px; display:flex; gap:10px; align-items:center;">
+                            <i class="fa-solid fa-head-side-virus" style="font-size:24px;"></i>
+                            <span style="background:#fff; border-radius:40px; padding:12px 18px; flex:1; border:1px solid #acc9e7;">
+                                🎤 Ovozli xabar yuborish
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- B2) ixtiyoriy: "audiongiz matnga mos bo‘lishi kerak" eslatmasi bir xil, ammo biz randomStep1dayoq eslatma sifatida qo‘shdik. Ammo talabga ko‘ra, "Ajoyib" degan qadam randomda yo‘q. Agar xoxlasangiz alohida, lekin shu yetarli. -->
+
+        </div>
+
+        <!-- qo'shimcha backend tayyorligi: bosishlar faqat statik namoyish -->
+        <div class="dummy-note">
+            <i class="fa-regular fa-circle-check"></i> Bosqichli ko‘rinish — statik demo, backendga moslanadi
+        </div>
+    </div>
+
+    <!-- JavaScript: bosqichlarni boshqarish (soddagina, faqat ko'rinishni almashtiradi) -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script>
+        (function () {
+            const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+            if (tg) { tg.ready(); tg.expand(); }
+            const initData = tg ? tg.initData : '';
+            const apiFetch = (p, opt) => {
+                const o = opt || {};
+                o.headers = o.headers || {};
+                o.headers['x-telegram-init-data'] = initData;
+                return fetch('/api' + p, o);
+            };
+            const openDB = () => new Promise((resolve, reject) => {
+                const req = indexedDB.open('Index.db', 1);
+                req.onupgradeneeded = () => {
+                    const db = req.result;
+                    if (!db.objectStoreNames.contains('files')) db.createObjectStore('files', { keyPath: 'id', autoIncrement: true });
+                    if (!db.objectStoreNames.contains('assessments')) db.createObjectStore('assessments', { keyPath: 'id', autoIncrement: true });
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+            const saveFileBlob = async (blob, name, type) => {
+                const db = await openDB();
+                const tx = db.transaction('files', 'readwrite');
+                tx.objectStore('files').add({ createdAt: Date.now(), name, type, blob });
+                tx.oncomplete = () => db.close();
+            };
+            const saveAssessmentData = async (data) => {
+                const db = await openDB();
+                const tx = db.transaction('assessments', 'readwrite');
+                tx.objectStore('assessments').add({ createdAt: Date.now(), data });
+                tx.oncomplete = () => db.close();
+            };
+            const panel = document.getElementById('stagePanel');
+            const defaultMsg = document.getElementById('defaultMessage');
+            const writeStep1 = document.getElementById('writeStep1');
+            const writeStep2 = document.getElementById('writeStep2');
+            const randomStep1 = document.getElementById('randomStep1');
+            const choiceWrite = document.getElementById('choiceWrite');
+            const choiceRandom = document.getElementById('choiceRandom');
+            let referenceText = null;
+            function hideAll() {
+                defaultMsg.classList.add('hidden');
+                writeStep1.classList.add('hidden');
+                writeStep2.classList.add('hidden');
+                randomStep1.classList.add('hidden');
+            }
+            function showDefault() { hideAll(); defaultMsg.classList.remove('hidden'); }
+            function showWriteStep1() {
+                hideAll();
+                writeStep1.classList.remove('hidden');
+                const box = writeStep1.querySelector('.input-sim');
+                if (box && !box.querySelector('textarea')) {
+                    const ta = document.createElement('textarea');
+                    ta.style.flex = '1';
+                    ta.rows = 3;
+                    ta.placeholder = 'Matn yoki so‘z kiriting';
+                    box.replaceChild(ta, box.querySelector('span'));
+                    const btn = box.querySelector('.fake-button');
+                    btn.textContent = 'Tasdiqlash';
+                    btn.addEventListener('click', function (ev) {
+                        ev.stopPropagation();
+                        const val = ta.value.trim();
+                        if (!val) return;
+                        referenceText = val;
+                        showWriteStep2();
+                    }, { once: true });
+                }
+            }
+            function showWriteStep2() {
+                hideAll();
+                writeStep2.classList.remove('hidden');
+                if (!writeStep2.querySelector('input[type="file"]')) {
+                    const uploadBlock = document.createElement('div');
+                    const file = document.createElement('input');
+                    file.type = 'file';
+                    file.accept = 'audio/*';
+                    file.style.marginTop = '12px';
+                    uploadBlock.appendChild(file);
+                    writeStep2.querySelector('.info-content').appendChild(uploadBlock);
+                    file.addEventListener('change', async function () {
+                        const f = file.files && file.files[0];
+                        if (!f) return;
+                        const fd = new FormData();
+                        fd.append('audio', f);
+                        fd.append('duration', '0');
+                        if (referenceText) fd.append('reference_text', referenceText);
+                        const r = await apiFetch('/analyze-audio', { method: 'POST', body: fd });
+                        const j = await r.json();
+                        if (j && j.success) {
+                            const d = j.data || {};
+                            const resBox = document.createElement('div');
+                            resBox.className = 'info-content';
+                            resBox.style.marginTop = '14px';
+                            resBox.innerHTML = '<strong>Natija</strong>' +
+                                '<div>Umumiy: ' + String(Math.round(d.overallScore || 0)) + '%</div>' +
+                                '<div>Aniqlik: ' + String(d.accuracyScore || 0) + '% · Ravonlik: ' + String(d.fluencyScore || 0) + '% · Ohang: ' + String(d.prosodyScore || 0) + '%</div>' +
+                                (d.transcription ? '<div style="margin-top:10px;">Transkripsiya: ' + d.transcription + '</div>' : '');
+                            writeStep2.querySelector('.message-box').appendChild(resBox);
+                            await saveAssessmentData(d);
+                            const { jsPDF } = window.jspdf;
+                            const doc = new jsPDF();
+                            doc.setFontSize(16);
+                            doc.text('Talaffuz tahlili', 10, 15);
+                            doc.setFontSize(12);
+                            doc.text('Umumiy: ' + String(Math.round(d.overallScore || 0)) + '%', 10, 28);
+                            doc.text('Aniqlik: ' + String(d.accuracyScore || 0) + '%', 10, 36);
+                            doc.text('Ravonlik: ' + String(d.fluencyScore || 0) + '%', 10, 44);
+                            doc.text('Ohang: ' + String(d.prosodyScore || 0) + '%', 10, 52);
+                            if (d.transcription) {
+                                doc.text('Transkripsiya:', 10, 66);
+                                doc.setFontSize(10);
+                                doc.text(String(d.transcription), 10, 74, { maxWidth: 180 });
+                            }
+                            const pdfBlob = doc.output('blob');
+                            const pdfName = 'assessment_' + Date.now() + '.pdf';
+                            await saveFileBlob(pdfBlob, pdfName, 'pdf');
+                            const dlBox = document.createElement('div');
+                            dlBox.style.marginTop = '10px';
+                            const dlBtn = document.createElement('button');
+                            dlBtn.className = 'fake-button';
+                            dlBtn.textContent = 'PDF yuklab olish';
+                            dlBtn.addEventListener('click', async () => {
+                                const db = await openDB();
+                                const tx = db.transaction('files', 'readonly');
+                                const store = tx.objectStore('files');
+                                const req = store.getAll();
+                                req.onsuccess = () => {
+                                    const all = req.result || [];
+                                    const item = all.reverse().find(x => x.type === 'pdf');
+                                    if (item) {
+                                        const url = URL.createObjectURL(item.blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = item.name || 'report.pdf';
+                                        a.click();
+                                        setTimeout(() => URL.revokeObjectURL(url), 3000);
+                                    }
+                                    db.close();
+                                };
+                            });
+                            dlBox.appendChild(dlBtn);
+                            writeStep2.querySelector('.message-box').appendChild(dlBox);
+                        }
+                    });
+                }
+            }
+            async function showRandomStep() {
+                hideAll();
+                randomStep1.classList.remove('hidden');
+                const box = randomStep1.querySelector('.random-word');
+                const hint = randomStep1.querySelector('.random-hint');
+                const type = 'word';
+                try {
+                    const r = await apiFetch('/random-word?type=' + type);
+                    const j = await r.json();
+                    const content = j && (j.word || j.content);
+                    if (box) box.textContent = content || '';
+                    referenceText = content || null;
+                } catch { }
+                if (!randomStep1.querySelector('input[type="file"]')) {
+                    const upload = document.createElement('input');
+                    upload.type = 'file';
+                    upload.accept = 'audio/*';
+                    upload.style.marginTop = '12px';
+                    randomStep1.querySelector('.info-content').appendChild(upload);
+                    upload.addEventListener('change', async function () {
+                        const f = upload.files && upload.files[0];
+                        if (!f) return;
+                        const fd = new FormData();
+                        fd.append('audio', f);
+                        fd.append('duration', '0');
+                        if (referenceText) fd.append('reference_text', referenceText);
+                        const r = await apiFetch('/analyze-audio', { method: 'POST', body: fd });
+                        const j = await r.json();
+                        if (j && j.success) {
+                            const d = j.data || {};
+                            const resBox = document.createElement('div');
+                            resBox.className = 'info-content';
+                            resBox.style.marginTop = '14px';
+                            resBox.innerHTML = '<strong>Natija</strong>' +
+                                '<div>Umumiy: ' + String(Math.round(d.overallScore || 0)) + '%</div>' +
+                                '<div>Aniqlik: ' + String(d.accuracyScore || 0) + '% · Ravonlik: ' + String(d.fluencyScore || 0) + '% · Ohang: ' + String(d.prosodyScore || 0) + '%</div>' +
+                                (d.transcription ? '<div style="margin-top:10px;">Transkripsiya: ' + d.transcription + '</div>' : '');
+                            randomStep1.querySelector('.message-box').appendChild(resBox);
+                            await saveAssessmentData(d);
+                            const { jsPDF } = window.jspdf;
+                            const doc = new jsPDF();
+                            doc.setFontSize(16);
+                            doc.text('Talaffuz tahlili', 10, 15);
+                            doc.setFontSize(12);
+                            doc.text('Umumiy: ' + String(Math.round(d.overallScore || 0)) + '%', 10, 28);
+                            doc.text('Aniqlik: ' + String(d.accuracyScore || 0) + '%', 10, 36);
+                            doc.text('Ravonlik: ' + String(d.fluencyScore || 0) + '%', 10, 44);
+                            doc.text('Ohang: ' + String(d.prosodyScore || 0) + '%', 10, 52);
+                            if (d.transcription) {
+                                doc.text('Transkripsiya:', 10, 66);
+                                doc.setFontSize(10);
+                                doc.text(String(d.transcription), 10, 74, { maxWidth: 180 });
+                            }
+                            const pdfBlob = doc.output('blob');
+                            const pdfName = 'assessment_' + Date.now() + '.pdf';
+                            await saveFileBlob(pdfBlob, pdfName, 'pdf');
+                            const dlBox = document.createElement('div');
+                            dlBox.style.marginTop = '10px';
+                            const dlBtn = document.createElement('button');
+                            dlBtn.className = 'fake-button';
+                            dlBtn.textContent = 'PDF yuklab olish';
+                            dlBtn.addEventListener('click', async () => {
+                                const db = await openDB();
+                                const tx = db.transaction('files', 'readonly');
+                                const store = tx.objectStore('files');
+                                const req = store.getAll();
+                                req.onsuccess = () => {
+                                    const all = req.result || [];
+                                    const item = all.reverse().find(x => x.type === 'pdf');
+                                    if (item) {
+                                        const url = URL.createObjectURL(item.blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = item.name || 'report.pdf';
+                                        a.click();
+                                        setTimeout(() => URL.revokeObjectURL(url), 3000);
+                                    }
+                                    db.close();
+                                };
+                            });
+                            dlBox.appendChild(dlBtn);
+                            randomStep1.querySelector('.message-box').appendChild(dlBox);
+                        }
+                    });
+                }
+            }
+            choiceWrite.addEventListener('click', function (e) { e.preventDefault(); showWriteStep1(); });
+            choiceRandom.addEventListener('click', function (e) { e.preventDefault(); showRandomStep(); });
+            const backBtn = document.querySelector('.back-btn');
+            backBtn.addEventListener('click', function (event) {
+                event.preventDefault();
+                showDefault();
+            });
+            showDefault();
+        })();
+    </script>
+
+    <!-- Tushuntirish: Barcha bosqichlar sizning talabingiz bo‘yicha:
+         "Talaffuz matnni o‘zim yozaman" -> Step1 (matn yozish) -> Step2 (Ajoyib, ovozli xabar)
+         "Tasodifiy so‘z va matn orqali tekshirish" -> tasodifiy matn (statik, backend almashtiradi)
+    -->
+</body>
+</html>

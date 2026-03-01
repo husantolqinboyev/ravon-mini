@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Tariflar · Ravon AI</title>
+    <!-- Font Awesome 6 (haqiqiy ikonlar) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #f0f5fe 0%, #e3ecf9 100%);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 16px 12px;
+        }
+
+        .phone-frame {
+            max-width: 400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 44px;
+            box-shadow: 0 25px 50px -12px rgba(0, 40, 80, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            padding: 24px 18px 30px;
+        }
+
+        /* header (orqaga va sarlavha) */
+        .tarif-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #1e3c72;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.7);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.02);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .back-btn:hover {
+            background: white;
+            transform: scale(1.02);
+        }
+        .back-btn:active {
+            transform: scale(0.96);
+        }
+        .header-title {
+            font-size: 24px;
+            font-weight: 650;
+            background: linear-gradient(145deg, #113355, #2b4b7a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+        .header-title i {
+            color: #2666b0;
+            margin-right: 6px;
+            font-size: 26px;
+        }
+
+        /* joriy tarif card */
+        .current-tarif {
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 32px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 8px 22px rgba(0,40,80,0.1);
+            margin-bottom: 24px;
+        }
+        .current-label {
+            font-size: 15px;
+            color: #1e4670;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .current-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .current-name {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(145deg, #004a9e, #002856);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .current-badge {
+            background: #f2e9d0;
+            border-radius: 40px;
+            padding: 8px 20px;
+            color: #7a5800;
+            font-weight: 600;
+            border: 1px solid #ffd966;
+        }
+        .current-valid {
+            margin-top: 14px;
+            color: #0f3d68;
+            background: #e9f0fa;
+            padding: 10px 18px;
+            border-radius: 50px;
+            display: inline-block;
+            font-size: 15px;
+        }
+
+        /* bo'lim sarlavhalari */
+        .section-title {
+            font-size: 20px;
+            font-weight: 650;
+            color: #003368;
+            margin: 22px 0 14px 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* tariflar grid */
+        .plans-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+        .plan-card {
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(4px);
+            border-radius: 30px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: 0.2s;
+            box-shadow: 0 6px 14px rgba(0,30,60,0.08);
+        }
+        .plan-icon {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #004c99;
+            box-shadow: 0 6px 16px rgba(0,70,150,0.15);
+            flex-shrink: 0;
+        }
+        .plan-details {
+            flex: 1;
+        }
+        .plan-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #002856;
+        }
+        .plan-features {
+            font-size: 14px;
+            color: #2f5580;
+            margin: 5px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .plan-features span {
+            background: rgba(255,255,255,0.7);
+            padding: 4px 12px;
+            border-radius: 30px;
+        }
+        .plan-price {
+            font-weight: 700;
+            color: #1e3c72;
+            font-size: 18px;
+            margin-top: 6px;
+        }
+        .buy-btn {
+            background: #004c99;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 22px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(0,70,150,0.3);
+            transition: 0.1s;
+            white-space: nowrap;
+            margin-left: 8px;
+        }
+        .buy-btn:active {
+            transform: scale(0.96);
+            background: #003a77;
+        }
+
+        /* bepul limit olish (referal) */
+        .free-limit-card {
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(4px);
+            border-radius: 40px;
+            padding: 22px;
+            border: 2px dashed #ffb347;
+            margin: 25px 0 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .free-limit-card:hover {
+            background: rgba(255,255,245,0.8);
+        }
+        .free-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .free-icon {
+            width: 64px;
+            height: 64px;
+            background: #ffe6b3;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            color: #b25600;
+        }
+        .free-text h3 {
+            font-size: 20px;
+            color: #003d75;
+        }
+        .free-text p {
+            color: #1f4a7a;
+            font-size: 14px;
+        }
+
+        /* referal panel (dastlab yashirin) */
+        .referal-panel {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 36px;
+            padding: 22px;
+            margin-top: 18px;
+            border: 1px solid white;
+            display: none;
+        }
+        .referal-panel.show {
+            display: block;
+        }
+        .referal-title {
+            font-weight: 700;
+            color: #00356b;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+        .referal-link {
+            background: #e3efff;
+            border-radius: 60px;
+            padding: 16px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid white;
+            margin: 12px 0;
+        }
+        .link-text {
+            font-weight: 500;
+            color: #003a77;
+        }
+        .copy-btn {
+            background: white;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #004c99;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        .referal-stats {
+            display: flex;
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .stat-badge {
+            background: white;
+            border-radius: 40px;
+            padding: 12px 16px;
+            flex: 1;
+            text-align: center;
+            border: 1px solid #cddff5;
+        }
+
+        .dummy-note {
+            text-align: center;
+            color: #577394;
+            font-size: 12px;
+            margin-top: 25px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <!-- header -->
+        <div class="tarif-header">
+            <div class="back-btn" id="backBtn" onclick="history.back(); return false;"><i class="fas fa-arrow-left"></i></div>
+            <div class="header-title">
+                <i class="fa-regular fa-gem"></i> Tariflar | Ko‘proq foyda
+            </div>
+        </div>
+
+        <!-- JORIY TARIF -->
+        <div class="current-tarif">
+            <div class="current-label">
+                <i class="fa-regular fa-clock"></i> Ayni vaqtdagi tarifingiz
+            </div>
+            <div class="current-row">
+                <span class="current-name">PREMIUM</span>
+                <span class="current-badge"><i class="fa-regular fa-star"></i> aktiv</span>
+            </div>
+            <div class="current-valid">
+                <i class="fa-regular fa-calendar"></i> Amal qilish muddati: 30.06.2026
+            </div>
+        </div>
+
+        <!-- MAVJUD TARIFLAR RO'YXATI -->
+        <div class="section-title">
+            <i class="fa-regular fa-list"></i> Mavjud tariflar
+        </div>
+        <div class="plans-grid">
+            <!-- Tarif 1: STANDART -->
+            <div class="plan-card">
+                <div class="plan-icon"><i class="fa-regular fa-paper-plane"></i></div>
+                <div class="plan-details">
+                    <div class="plan-name">Standart</div>
+                    <div class="plan-features">
+                        <span>50 ta so'rov/kun</span>
+                        <span>asosiy ovozlar</span>
+                    </div>
+                    <div class="plan-price">25 000 so‘m/oy</div>
+                </div>
+                <button class="buy-btn" data-plan="standart">Sotib olish</button>
+            </div>
+
+            <!-- Tarif 2: PREMIUM (joriy, lekin taklif) -->
+            <div class="plan-card">
+                <div class="plan-icon"><i class="fa-regular fa-gem"></i></div>
+                <div class="plan-details">
+                    <div class="plan-name">Premium</div>
+                    <div class="plan-features">
+                        <span>cheksiz so‘rov</span>
+                        <span>8+ ovoz</span>
+                        <span>tezkor</span>
+                    </div>
+                    <div class="plan-price">55 000 so‘m/oy</div>
+                </div>
+                <button class="buy-btn" data-plan="premium">Sotib olish</button>
+            </div>
+
+            <!-- Tarif 3: MAX (yillik) -->
+            <div class="plan-card">
+                <div class="plan-icon"><i class="fa-regular fa-crown"></i></div>
+                <div class="plan-details">
+                    <div class="plan-name">Max (yillik)</div>
+                    <div class="plan-features">
+                        <span>cheksiz</span>
+                        <span>barcha ovozlar</span>
+                        <span>shaxsiy yordam</span>
+                    </div>
+                    <div class="plan-price">550 000 so‘m/yl</div>
+                </div>
+                <button class="buy-btn" data-plan="max">Sotib olish</button>
+            </div>
+        </div>
+
+        <!-- BEPUL LIMIT OLISH (referal) -->
+        <div class="section-title" style="margin-top: 20px;">
+            <i class="fa-regular fa-gift" style="color:#d97917;"></i> Bepul limit olish
+        </div>
+        <div class="free-limit-card" id="freeLimitToggle">
+            <div class="free-header">
+                <div class="free-icon"><i class="fa-regular fa-hand-peace"></i></div>
+                <div class="free-text">
+                    <h3>Do‘stlarni taklif eting</h3>
+                    <p>Har bir taklif uchun 10 ta bepul limit</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- REFERAL PANEL (dastlab yashirin) -->
+        <div class="referal-panel" id="referalPanel">
+            <div class="referal-title"><i class="fa-regular fa-share-nodes"></i> Referal tizimi</div>
+            <div class="referal-link">
+                <span class="link-text">https://t.me/ravon_ai_bot?ref=AZBEK23</span>
+                <button class="copy-btn" id="copyLinkBtn"><i class="fa-regular fa-copy"></i> Nusxa</button>
+            </div>
+            <div class="referal-stats">
+                <div class="stat-badge"><i class="fa-regular fa-user-plus"></i> 8 do‘st</div>
+                <div class="stat-badge"><i class="fa-regular fa-bolt"></i> 80 limit</div>
+            </div>
+            <div style="color:#003f77; background:#e2edff; border-radius:30px; padding:14px; text-align:center;">
+                <i class="fa-regular fa-circle-info"></i> Taklif qilgan har bir do‘stingizga ham 5 limit beriladi
+            </div>
+            <div style="margin-top:16px;">
+                <button class="buy-btn" style="background:#d97917; width:100%;">Batafsil ko‘rsatkichlar</button>
+            </div>
+        </div>
+
+        <!-- backend tayyorligi eslatmasi -->
+        <div class="dummy-note">
+            <i class="fa-regular fa-database"></i> statik maʼlumot · backendga moslanadi
+        </div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        (function () {
+            const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+            if (tg) { tg.ready(); tg.expand(); }
+            const initData = tg ? tg.initData : '';
+            const apiFetch = (p, opt) => {
+                const o = opt || {};
+                o.headers = o.headers || {};
+                o.headers['x-telegram-init-data'] = initData;
+                return fetch('/api' + p, o);
+            };
+            const backBtn = document.getElementById('backBtn');
+            backBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                history.back();
+            });
+            const fillCurrentTariff = (me) => {
+                const nameEl = document.querySelector('.current-name');
+                const validEl = document.querySelector('.current-valid');
+                if (nameEl) nameEl.innerText = me.tariff_name || '—';
+                if (validEl) validEl.innerHTML = '<i class="fa-regular fa-calendar"></i> Amal qilish muddati: ' + (me.tariff_until || '-');
+            };
+            const fillTariffs = (tariffs) => {
+                const grid = document.querySelector('.plans-grid');
+                if (!grid) return;
+                grid.innerHTML = '';
+                tariffs.forEach(t => {
+                    const card = document.createElement('div');
+                    card.className = 'plan-card';
+                    card.innerHTML =
+                        '<div class="plan-icon"><i class="fa-regular fa-gem"></i></div>' +
+                        '<div class="plan-details">' +
+                        '<div class="plan-name">' + t.name + '</div>' +
+                        '<div class="plan-features">' +
+                        '<span>' + String(t.limit_per_day || 0) + ' ta so‘rov/kun</span>' +
+                        '<span>' + String(t.word_limit || 0) + ' so‘z limit</span>' +
+                        '</div>' +
+                        '<div class="plan-price">' + String(t.price || 0) + ' so‘m</div>' +
+                        '</div>' +
+                        '<button class="buy-btn" data-id="' + t.id + '">Sotib olish</button>';
+                    grid.appendChild(card);
+                });
+                grid.querySelectorAll('.buy-btn').forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const id = this.getAttribute('data-id');
+                        if (tg && id) tg.sendData(JSON.stringify({ source: 'mini_app', action: 'select_tariff_' + id }));
+                    });
+                });
+            };
+            const fillReferral = (ref) => {
+                const linkEl = document.querySelector('.link-text');
+                const stats = document.querySelectorAll('.stat-badge');
+                if (linkEl) linkEl.innerText = ref.referral_link || '—';
+                if (stats && stats.length >= 2) {
+                    stats[0].innerHTML = '<i class="fa-regular fa-user-plus"></i> ' + String(ref.referral_count || 0) + ' do‘st';
+                    stats[1].innerHTML = '<i class="fa-regular fa-bolt"></i> ' + String((ref.bonus_limit || 0) + (ref.daily_limit || 0)) + ' limit';
+                }
+            };
+            apiFetch('/user-data').then(r => r.ok ? r.json() : null).then(d => {
+                if (!d) return;
+                fillCurrentTariff(d.user || {});
+                fillTariffs(d.tariffs || []);
+                fillReferral(d.referralInfo || {});
+            }).catch(() => { });
+            const freeToggle = document.getElementById('freeLimitToggle');
+            const referalPanel = document.getElementById('referalPanel');
+            freeToggle.addEventListener('click', function () {
+                referalPanel.classList.toggle('show');
+            });
+            const copyBtn = document.getElementById('copyLinkBtn');
+            copyBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const linkText = document.querySelector('.link-text')?.innerText;
+                if (linkText && navigator.clipboard) {
+                    navigator.clipboard.writeText(linkText);
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

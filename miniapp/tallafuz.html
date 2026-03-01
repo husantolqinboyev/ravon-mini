@@ -270,6 +270,32 @@
             gap: 8px;
         }
 
+        .rec-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 14px;
+        }
+        .rec-btn {
+            background: #004c99;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 22px;
+            font-weight: 600;
+            box-shadow: 0 8px 18px rgba(0,70,150,0.3);
+        }
+        .stop-btn {
+            background: #d43f3f;
+        }
+        .timer {
+            background: #e3efff;
+            color: #003f77;
+            border-radius: 30px;
+            padding: 8px 14px;
+            border: 1px solid #cbdcf3;
+        }
+
         .hidden {
             display: none !important;
         }
@@ -295,6 +321,23 @@
             font-size: 12px;
             margin-top: 25px;
             opacity: 0.5;
+        }
+        @media (max-width: 380px) {
+            .phone-frame { border-radius: 36px; padding: 18px 14px 24px; }
+            .talaffuz-header { gap: 12px; margin-bottom: 20px; }
+            .header-title { font-size: 20px; }
+            .choice-card { border-radius: 30px; padding: 16px 14px; gap: 12px; }
+            .choice-icon { width: 54px; height: 54px; font-size: 28px; }
+            .choice-text { font-size: 16px; }
+            .choice-text small { font-size: 12px; }
+            .stage-panel { border-radius: 30px; padding: 16px 14px; }
+            .info-row i { width: 40px; height: 40px; font-size: 22px; }
+            .info-content { font-size: 14px; }
+            .input-sim { border-radius: 24px; padding: 12px 14px; }
+            .fake-button { padding: 8px 14px; font-size: 14px; }
+            .random-word { font-size: 32px; }
+            .rec-btn { padding: 10px 16px; }
+            .timer { padding: 6px 10px; font-size: 12px; }
         }
     </style>
 </head>
@@ -482,80 +525,7 @@
             function showWriteStep2() {
                 hideAll();
                 writeStep2.classList.remove('hidden');
-                if (!writeStep2.querySelector('input[type="file"]')) {
-                    const uploadBlock = document.createElement('div');
-                    const file = document.createElement('input');
-                    file.type = 'file';
-                    file.accept = 'audio/*';
-                    file.style.marginTop = '12px';
-                    uploadBlock.appendChild(file);
-                    writeStep2.querySelector('.info-content').appendChild(uploadBlock);
-                    file.addEventListener('change', async function () {
-                        const f = file.files && file.files[0];
-                        if (!f) return;
-                        const fd = new FormData();
-                        fd.append('audio', f);
-                        fd.append('duration', '0');
-                        if (referenceText) fd.append('reference_text', referenceText);
-                        const r = await apiFetch('/analyze-audio', { method: 'POST', body: fd });
-                        const j = await r.json();
-                        if (j && j.success) {
-                            const d = j.data || {};
-                            const resBox = document.createElement('div');
-                            resBox.className = 'info-content';
-                            resBox.style.marginTop = '14px';
-                            resBox.innerHTML = '<strong>Natija</strong>' +
-                                '<div>Umumiy: ' + String(Math.round(d.overallScore || 0)) + '%</div>' +
-                                '<div>Aniqlik: ' + String(d.accuracyScore || 0) + '% · Ravonlik: ' + String(d.fluencyScore || 0) + '% · Ohang: ' + String(d.prosodyScore || 0) + '%</div>' +
-                                (d.transcription ? '<div style="margin-top:10px;">Transkripsiya: ' + d.transcription + '</div>' : '');
-                            writeStep2.querySelector('.message-box').appendChild(resBox);
-                            await saveAssessmentData(d);
-                            const { jsPDF } = window.jspdf;
-                            const doc = new jsPDF();
-                            doc.setFontSize(16);
-                            doc.text('Talaffuz tahlili', 10, 15);
-                            doc.setFontSize(12);
-                            doc.text('Umumiy: ' + String(Math.round(d.overallScore || 0)) + '%', 10, 28);
-                            doc.text('Aniqlik: ' + String(d.accuracyScore || 0) + '%', 10, 36);
-                            doc.text('Ravonlik: ' + String(d.fluencyScore || 0) + '%', 10, 44);
-                            doc.text('Ohang: ' + String(d.prosodyScore || 0) + '%', 10, 52);
-                            if (d.transcription) {
-                                doc.text('Transkripsiya:', 10, 66);
-                                doc.setFontSize(10);
-                                doc.text(String(d.transcription), 10, 74, { maxWidth: 180 });
-                            }
-                            const pdfBlob = doc.output('blob');
-                            const pdfName = 'assessment_' + Date.now() + '.pdf';
-                            await saveFileBlob(pdfBlob, pdfName, 'pdf');
-                            const dlBox = document.createElement('div');
-                            dlBox.style.marginTop = '10px';
-                            const dlBtn = document.createElement('button');
-                            dlBtn.className = 'fake-button';
-                            dlBtn.textContent = 'PDF yuklab olish';
-                            dlBtn.addEventListener('click', async () => {
-                                const db = await openDB();
-                                const tx = db.transaction('files', 'readonly');
-                                const store = tx.objectStore('files');
-                                const req = store.getAll();
-                                req.onsuccess = () => {
-                                    const all = req.result || [];
-                                    const item = all.reverse().find(x => x.type === 'pdf');
-                                    if (item) {
-                                        const url = URL.createObjectURL(item.blob);
-                                        const a = document.createElement('a');
-                                        a.href = url;
-                                        a.download = item.name || 'report.pdf';
-                                        a.click();
-                                        setTimeout(() => URL.revokeObjectURL(url), 3000);
-                                    }
-                                    db.close();
-                                };
-                            });
-                            dlBox.appendChild(dlBtn);
-                            writeStep2.querySelector('.message-box').appendChild(dlBox);
-                        }
-                    });
-                }
+                setupRecorder(writeStep2);
             }
             async function showRandomStep() {
                 hideAll();
@@ -570,78 +540,123 @@
                     if (box) box.textContent = content || '';
                     referenceText = content || null;
                 } catch { }
-                if (!randomStep1.querySelector('input[type="file"]')) {
-                    const upload = document.createElement('input');
-                    upload.type = 'file';
-                    upload.accept = 'audio/*';
-                    upload.style.marginTop = '12px';
-                    randomStep1.querySelector('.info-content').appendChild(upload);
-                    upload.addEventListener('change', async function () {
-                        const f = upload.files && upload.files[0];
-                        if (!f) return;
-                        const fd = new FormData();
-                        fd.append('audio', f);
-                        fd.append('duration', '0');
-                        if (referenceText) fd.append('reference_text', referenceText);
-                        const r = await apiFetch('/analyze-audio', { method: 'POST', body: fd });
-                        const j = await r.json();
-                        if (j && j.success) {
-                            const d = j.data || {};
-                            const resBox = document.createElement('div');
-                            resBox.className = 'info-content';
-                            resBox.style.marginTop = '14px';
-                            resBox.innerHTML = '<strong>Natija</strong>' +
-                                '<div>Umumiy: ' + String(Math.round(d.overallScore || 0)) + '%</div>' +
-                                '<div>Aniqlik: ' + String(d.accuracyScore || 0) + '% · Ravonlik: ' + String(d.fluencyScore || 0) + '% · Ohang: ' + String(d.prosodyScore || 0) + '%</div>' +
-                                (d.transcription ? '<div style="margin-top:10px;">Transkripsiya: ' + d.transcription + '</div>' : '');
-                            randomStep1.querySelector('.message-box').appendChild(resBox);
-                            await saveAssessmentData(d);
-                            const { jsPDF } = window.jspdf;
-                            const doc = new jsPDF();
-                            doc.setFontSize(16);
-                            doc.text('Talaffuz tahlili', 10, 15);
-                            doc.setFontSize(12);
-                            doc.text('Umumiy: ' + String(Math.round(d.overallScore || 0)) + '%', 10, 28);
-                            doc.text('Aniqlik: ' + String(d.accuracyScore || 0) + '%', 10, 36);
-                            doc.text('Ravonlik: ' + String(d.fluencyScore || 0) + '%', 10, 44);
-                            doc.text('Ohang: ' + String(d.prosodyScore || 0) + '%', 10, 52);
-                            if (d.transcription) {
-                                doc.text('Transkripsiya:', 10, 66);
-                                doc.setFontSize(10);
-                                doc.text(String(d.transcription), 10, 74, { maxWidth: 180 });
-                            }
-                            const pdfBlob = doc.output('blob');
-                            const pdfName = 'assessment_' + Date.now() + '.pdf';
-                            await saveFileBlob(pdfBlob, pdfName, 'pdf');
-                            const dlBox = document.createElement('div');
-                            dlBox.style.marginTop = '10px';
-                            const dlBtn = document.createElement('button');
-                            dlBtn.className = 'fake-button';
-                            dlBtn.textContent = 'PDF yuklab olish';
-                            dlBtn.addEventListener('click', async () => {
-                                const db = await openDB();
-                                const tx = db.transaction('files', 'readonly');
-                                const store = tx.objectStore('files');
-                                const req = store.getAll();
-                                req.onsuccess = () => {
-                                    const all = req.result || [];
-                                    const item = all.reverse().find(x => x.type === 'pdf');
-                                    if (item) {
-                                        const url = URL.createObjectURL(item.blob);
-                                        const a = document.createElement('a');
-                                        a.href = url;
-                                        a.download = item.name || 'report.pdf';
-                                        a.click();
-                                        setTimeout(() => URL.revokeObjectURL(url), 3000);
-                                    }
-                                    db.close();
-                                };
-                            });
-                            dlBox.appendChild(dlBtn);
-                            randomStep1.querySelector('.message-box').appendChild(dlBox);
-                        }
-                    });
+                setupRecorder(randomStep1);
+            }
+            function setupRecorder(container) {
+                if (container.querySelector('.rec-controls')) return;
+                const controls = document.createElement('div');
+                controls.className = 'rec-controls';
+                const startBtn = document.createElement('button');
+                startBtn.className = 'rec-btn';
+                startBtn.textContent = 'Yozishni boshlash';
+                const stopBtn = document.createElement('button');
+                stopBtn.className = 'rec-btn stop-btn';
+                stopBtn.textContent = 'To‘xtatish';
+                stopBtn.disabled = true;
+                const timer = document.createElement('div');
+                timer.className = 'timer';
+                timer.textContent = '00:00';
+                controls.appendChild(startBtn);
+                controls.appendChild(stopBtn);
+                controls.appendChild(timer);
+                container.querySelector('.info-content').appendChild(controls);
+                let mediaRecorder = null;
+                let chunks = [];
+                let t0 = 0;
+                let tick = null;
+                function fmt(ms) {
+                    const s = Math.floor(ms / 1000);
+                    const mm = String(Math.floor(s / 60)).padStart(2, '0');
+                    const ss = String(s % 60).padStart(2, '0');
+                    return mm + ':' + ss;
                 }
+                startBtn.addEventListener('click', async () => {
+                    chunks = [];
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        const mime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg';
+                        mediaRecorder = new MediaRecorder(stream, { mimeType: mime });
+                        mediaRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+                        mediaRecorder.onstop = async () => {
+                            const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
+                            const fd = new FormData();
+                            fd.append('audio', blob, 'rec.' + (blob.type.includes('webm') ? 'webm' : 'ogg'));
+                            fd.append('duration', String(Math.floor((Date.now() - t0) / 1000)));
+                            if (referenceText) fd.append('reference_text', referenceText);
+                            const r = await apiFetch('/analyze-audio', { method: 'POST', body: fd });
+                            const j = await r.json();
+                            if (j && j.success) {
+                                const d = j.data || {};
+                                const resBox = document.createElement('div');
+                                resBox.className = 'info-content';
+                                resBox.style.marginTop = '14px';
+                                resBox.innerHTML = '<strong>Natija</strong>' +
+                                    '<div>Umumiy: ' + String(Math.round(d.overallScore || 0)) + '%</div>' +
+                                    '<div>Aniqlik: ' + String(d.accuracyScore || 0) + '% · Ravonlik: ' + String(d.fluencyScore || 0) + '% · Ohang: ' + String(d.prosodyScore || 0) + '%</div>' +
+                                    (d.transcription ? '<div style="margin-top:10px;">Transkripsiya: ' + d.transcription + '</div>' : '');
+                                container.querySelector('.message-box').appendChild(resBox);
+                                await saveAssessmentData(d);
+                                const { jsPDF } = window.jspdf;
+                                const doc = new jsPDF();
+                                doc.setFontSize(16);
+                                doc.text('Talaffuz tahlili', 10, 15);
+                                doc.setFontSize(12);
+                                doc.text('Umumiy: ' + String(Math.round(d.overallScore || 0)) + '%', 10, 28);
+                                doc.text('Aniqlik: ' + String(d.accuracyScore || 0) + '%', 10, 36);
+                                doc.text('Ravonlik: ' + String(d.fluencyScore || 0) + '%', 10, 44);
+                                doc.text('Ohang: ' + String(d.prosodyScore || 0) + '%', 10, 52);
+                                if (d.transcription) {
+                                    doc.text('Transkripsiya:', 10, 66);
+                                    doc.setFontSize(10);
+                                    doc.text(String(d.transcription), 10, 74, { maxWidth: 180 });
+                                }
+                                const pdfBlob = doc.output('blob');
+                                const pdfName = 'assessment_' + Date.now() + '.pdf';
+                                await saveFileBlob(pdfBlob, pdfName, 'pdf');
+                                const dlBox = document.createElement('div');
+                                dlBox.style.marginTop = '10px';
+                                const dlBtn = document.createElement('button');
+                                dlBtn.className = 'fake-button';
+                                dlBtn.textContent = 'PDF yuklab olish';
+                                dlBtn.addEventListener('click', async () => {
+                                    const db = await openDB();
+                                    const tx = db.transaction('files', 'readonly');
+                                    const store = tx.objectStore('files');
+                                    const req = store.getAll();
+                                    req.onsuccess = () => {
+                                        const all = req.result || [];
+                                        const item = all.reverse().find(x => x.type === 'pdf');
+                                        if (item) {
+                                            const url = URL.createObjectURL(item.blob);
+                                            const a = document.createElement('a');
+                                            a.href = url;
+                                            a.download = item.name || 'report.pdf';
+                                            a.click();
+                                            setTimeout(() => URL.revokeObjectURL(url), 3000);
+                                        }
+                                        db.close();
+                                    };
+                                });
+                                dlBox.appendChild(dlBtn);
+                                container.querySelector('.message-box').appendChild(dlBox);
+                            }
+                        };
+                        mediaRecorder.start();
+                        t0 = Date.now();
+                        timer.textContent = '00:00';
+                        tick = setInterval(() => { timer.textContent = fmt(Date.now() - t0); }, 500);
+                        startBtn.disabled = true;
+                        stopBtn.disabled = false;
+                    } catch { }
+                });
+                stopBtn.addEventListener('click', () => {
+                    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                        mediaRecorder.stop();
+                        clearInterval(tick);
+                        stopBtn.disabled = true;
+                        startBtn.disabled = false;
+                    }
+                });
             }
             choiceWrite.addEventListener('click', function (e) { e.preventDefault(); showWriteStep1(); });
             choiceRandom.addEventListener('click', function (e) { e.preventDefault(); showRandomStep(); });

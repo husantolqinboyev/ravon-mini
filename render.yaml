@@ -1,12 +1,12 @@
 services:
   - type: web
-    name: ravon-mini
+    name: ravon-ai-bot
     env: node
     plan: free
-    rootDir: beckend-bot
     buildCommand: "npm install"
     startCommand: "node index.js"
-    healthCheckPath: "/ping"
     envVars:
+      - key: WEB_CONCURRENCY
+        value: "0"
       - key: NODE_ENV
         value: "production"

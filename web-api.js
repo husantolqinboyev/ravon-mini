@@ -13,6 +13,7 @@ const router = express.Router();
 const verifyTelegramWebAppData = (req, res, next) => {
     const initData = req.headers['x-telegram-init-data'];
     if (!initData) {
+        if (config.ALLOW_UNVERIFIED) return next();
         return res.status(401).json({ error: 'Missing Telegram initData' });
     }
 
@@ -43,9 +44,11 @@ const verifyTelegramWebAppData = (req, res, next) => {
                 return next();
             }
         }
+        if (config.ALLOW_UNVERIFIED) return next();
         return res.status(401).json({ error: 'Invalid Telegram initData' });
     } catch (error) {
         console.error('Telegram Auth Error:', error);
+        if (config.ALLOW_UNVERIFIED) return next();
         return res.status(500).json({ error: 'Auth internal error' });
     }
 };
